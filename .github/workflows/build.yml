@@ -1,0 +1,97 @@
+name: Build desktop app
+
+# Builds the Windows, macOS and Linux installers on GitHub's servers.
+#  - Every push / pull request: builds all three and attaches the installers
+#    to the workflow run (Actions tab -> the run -> "Artifacts").
+#  - Pushing a tag like v1.0.0: also publishes a GitHub Release with the
+#    installers attached (Releases page of the repository).
+#  - "Run workflow" button (Actions tab): manual build any time.
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            target: --win
+          - name: macOS
+            os: macos-latest
+            target: --mac
+          - name: Linux
+            os: ubuntu-latest
+            target: --linux
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run lint
+
+      - name: Build web assets
+        run: npm run build
+
+      - name: Package installers
+        run: npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          # No paid code-signing certificate: build unsigned (macOS gets an ad-hoc signature).
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeepFlow-${{ matrix.name }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            release/*.exe
+            release/*.dmg
+            release/*.zip
+            release/*.AppImage
+            release/*.deb
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: DeepFlow ${{ github.ref_name }}
+          generate_release_notes: true
+          files: installers/*

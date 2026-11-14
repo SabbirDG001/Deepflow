@@ -1,0 +1,164 @@
+/* Fonts are bundled locally so the desktop app works fully offline. */
+@import '@fontsource/inter/latin-200.css';
+@import '@fontsource/inter/latin-300.css';
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/inter/latin-700.css';
+@import '@fontsource/noto-sans-bengali/bengali-300.css';
+@import '@fontsource/noto-sans-bengali/bengali-400.css';
+@import '@fontsource/noto-sans-bengali/bengali-500.css';
+@import '@fontsource/noto-sans-bengali/bengali-600.css';
+@import '@fontsource/noto-sans-bengali/bengali-700.css';
+@import '@fontsource/jetbrains-mono/latin-200.css';
+@import '@fontsource/jetbrains-mono/latin-300.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/jetbrains-mono/latin-700.css';
+@import "tailwindcss";
+
+/*
+ * Minimal palette.
+ * Neutrals are a true grey (no blue cast). The single accent (cyan / blue / teal
+ * in the markup) is a soft off-white, so the UI reads monochrome. The colours
+ * that carry meaning (phase categories, breathing stages, warnings) are kept but
+ * desaturated so they inform without shouting.
+ */
+@theme {
+  --font-sans: "Inter", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Noto Sans Bengali", ui-monospace, SFMono-Regular, monospace;
+
+  /* Neutrals */
+  --color-slate-50:  #fafafa;
+  --color-slate-100: #ededee;
+  --color-slate-200: #d6d6d9;
+  --color-slate-300: #b4b4b8;
+  --color-slate-400: #8e8e94;
+  --color-slate-500: #6b6b71;
+  --color-slate-600: #4d4d52;
+  --color-slate-650: #444449;
+  --color-slate-700: #36363a;
+  --color-slate-800: #232326;
+  --color-slate-900: #141416;
+  --color-slate-950: #0a0a0b;
+
+  /* Primary accent: monochrome */
+  --color-cyan-300: #f4f4f5;
+  --color-cyan-400: #e8e8ea;
+  --color-cyan-500: #dcdcdf;
+  --color-teal-300: #f4f4f5;
+  --color-teal-400: #e8e8ea;
+  --color-teal-500: #dcdcdf;
+
+  /* Semantic tones, desaturated */
+  --color-blue-300:    #b9cbe0;
+  --color-blue-400:    #9db5d1;
+  --color-blue-500:    #86a1c1;
+  --color-emerald-300: #b7d3c2;
+  --color-emerald-400: #9cc2ab;
+  --color-emerald-500: #84ad95;
+  --color-amber-300:   #e6d3ad;
+  --color-amber-400:   #d9c08f;
+  --color-amber-500:   #c9ad77;
+  --color-yellow-500:  #c9ad77;
+  --color-orange-400:  #e0ad8a;
+  --color-orange-500:  #cf9873;
+  --color-purple-300:  #cfc3e3;
+  --color-purple-400:  #b9a9d6;
+  --color-purple-500:  #a693c8;
+  --color-rose-300:    #e8bcc3;
+  --color-rose-400:    #dba3ad;
+  --color-rose-500:    #c98d98;
+  --color-red-200:     #f0cfd3;
+  --color-red-300:     #e8bcc3;
+  --color-red-400:     #dba3ad;
+  --color-red-500:     #c98d98;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-slate-950);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* A desktop app shouldn't let chrome text be drag-selected; content still can. */
+nav,
+footer,
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 2px;
+}
+
+input,
+textarea,
+select {
+  caret-color: var(--color-slate-100);
+}
+
+select option {
+  background: var(--color-slate-900);
+  color: var(--color-slate-100);
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Quiet scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+  background-clip: padding-box;
+}
+
+/* Custom fade effects */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
