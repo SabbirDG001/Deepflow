@@ -5,7 +5,9 @@ name: Build desktop app
 #    to the workflow run (Actions tab -> the run -> "Artifacts").
 #  - Pushing a tag like v1.0.0: also publishes a GitHub Release with the
 #    installers attached (Releases page of the repository).
-#  - "Run workflow" button (Actions tab): manual build any time.
+#  - "Run workflow" button (Actions tab): manual build any time. Tick
+#    "Publish a GitHub Release" to also publish the installers as a Release
+#    tagged v<version from package.json>.
 
 on:
   push:
@@ -13,6 +15,11 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: 'Publish a GitHub Release (tag = v + version in package.json)'
+        type: boolean
+        default: false
 
 concurrency:
   group: build-${{ github.ref }}
@@ -78,11 +85,24 @@ jobs:
   release:
     name: Publish GitHub Release
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.publish_release)
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Work out the release tag
+        id: tag
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Download installers
         uses: actions/download-artifact@v4
         with:
@@ -92,6 +112,8 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          name: DeepFlow ${{ github.ref_name }}
+          tag_name: ${{ steps.tag.outputs.name }}
+          target_commitish: ${{ github.sha }}
+          name: DeepFlow ${{ steps.tag.outputs.name }}
           generate_release_notes: true
           files: installers/*
