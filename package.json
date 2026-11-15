@@ -60,21 +60,11 @@
         {
           "target": "nsis",
           "arch": [
-            "x64",
-            "arm64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
             "x64"
           ]
         }
       ],
       "icon": "build/icon.png"
-    },
-    "portable": {
-      "artifactName": "DeepFlow-${version}-win-portable.${ext}"
     },
     "nsis": {
       "oneClick": false,

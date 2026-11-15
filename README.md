@@ -16,9 +16,7 @@ Open the repository's **Releases** page and download the file for your system:
 
 | System | File |
 | --- | --- |
-| Windows (most PCs) | `DeepFlow-x.y.z-win-x64-setup.exe` |
-| Windows on ARM | `DeepFlow-x.y.z-win-arm64-setup.exe` |
-| Windows, no install | `DeepFlow-x.y.z-win-portable.exe` |
+| Windows | `DeepFlow-x.y.z-win-x64-setup.exe` |
 | macOS, Apple Silicon (M1/M2/M3/M4…) | `DeepFlow-x.y.z-mac-arm64.dmg` |
 | macOS, Intel | `DeepFlow-x.y.z-mac-x64.dmg` |
 | Linux (any distro) | `DeepFlow-x.y.z-linux-x86_64.AppImage` |
